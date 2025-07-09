@@ -67,13 +67,13 @@ import type { ClassValue } from 'clsx';
 				<div class="space-y-4">
 					<div class="relative flex items-center justify-center pt-1">
 						<div brnCalendarHeader class="flex items-center gap-1 text-sm font-medium">
-							<hlm-select [value]="months()[selectedMonth()].value" [placeholder]="months()[selectedMonth()].label">
+							<hlm-select (valueChange)="onMonthSelected($event)" [value]="months()[selectedMonth()].value" [placeholder]="months()[selectedMonth()].label">
 								<hlm-select-trigger class="mt-0 h-7 px-2">
 									<hlm-select-value></hlm-select-value>
 								</hlm-select-trigger>
 								<hlm-select-content>
 									@for (month of months(); track month.value) {
-										<hlm-option (click)="onMonthSelected(month.value)" [value]="month.value">
+										<hlm-option [value]="month.value">
 											{{ month.label }}
 										</hlm-option>
 									}
@@ -81,6 +81,7 @@ import type { ClassValue } from 'clsx';
 							</hlm-select>
 
 							<hlm-select
+								(valueChange)="onYearSelected($event)"
 								[value]="years()[selectedYearIndex()].value"
 								[placeholder]="years()[selectedYearIndex()].label"
 							>
@@ -89,7 +90,7 @@ import type { ClassValue } from 'clsx';
 								</hlm-select-trigger>
 								<hlm-select-content>
 									@for (year of years(); track year.value) {
-										<hlm-option (click)="onYearSelected(year.value)" [value]="year.value">{{ year.label }}</hlm-option>
+										<hlm-option [value]="year.value">{{ year.label }}</hlm-option>
 									}
 								</hlm-select-content>
 							</hlm-select>
@@ -231,8 +232,10 @@ export class HlmCalendarComponent<T> {
 		return currentYear - this.startOfTime;
 	});
 
-	protected onMonthSelected(month: number): void {
-		console.log({ month });
+	protected onMonthSelected(month: number | number[] | undefined): void {
+		if (typeof month !== 'number') {
+			return;
+		}
 		const currentDate = this._calendar().focusedDate();
 		const year = this.dateAdapter.getYear(currentDate);
 		const day = this.dateAdapter.getDay(currentDate);
@@ -241,8 +244,10 @@ export class HlmCalendarComponent<T> {
 		this._calendar().state().focusedDate.set(newDate);
 	}
 
-	protected onYearSelected(year: number): void {
-		console.log({ year });
+	protected onYearSelected(year: number | number[] | undefined): void {
+		if (typeof year !== 'number') {
+			return;
+		}
 		const currentDate = this._calendar().focusedDate();
 		const month = this.dateAdapter.getMonth(currentDate);
 		const day = this.dateAdapter.getDay(currentDate);
