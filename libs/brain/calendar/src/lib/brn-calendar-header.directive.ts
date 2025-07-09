@@ -1,11 +1,4 @@
-import {
-	AfterViewInit,
-	Directive,
-	ElementRef,
-	inject,
-	input,
-	Renderer2
-} from '@angular/core';
+import { AfterViewInit, Directive, ElementRef, inject, input, Renderer2 } from '@angular/core';
 
 let uniqueId = 0;
 
@@ -36,7 +29,6 @@ export class BrnCalendarHeaderDirective implements AfterViewInit {
 			overlayOrigins.forEach((overlayOrigin: HTMLElement) => {
 				this._renderer.addClass(overlayOrigin, '!mt-0');
 			});
-
 		} else {
 			this.searchInParents();
 		}
@@ -58,5 +50,4 @@ export class BrnCalendarHeaderDirective implements AfterViewInit {
 			currentElement = currentElement.parentElement;
 		}
 	}
-
 }

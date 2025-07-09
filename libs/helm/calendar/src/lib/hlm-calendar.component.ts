@@ -26,11 +26,11 @@ import {
 } from '@spartan-ng/brain/calendar';
 import { hlm } from '@spartan-ng/brain/core';
 import { injectDateAdapter } from '@spartan-ng/brain/date-time';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { buttonVariants } from '@spartan-ng/helm/button';
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
-import type { ClassValue } from 'clsx';
-import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
+import type { ClassValue } from 'clsx';
 
 @Component({
 	selector: 'hlm-calendar',
@@ -47,7 +47,7 @@ import { HlmSelectImports } from '@spartan-ng/helm/select';
 		NgIcon,
 		HlmIconDirective,
 		BrnSelectImports,
-		HlmSelectImports
+		HlmSelectImports,
 	],
 	viewProviders: [provideIcons({ lucideChevronLeft, lucideChevronRight })],
 	template: `
@@ -66,31 +66,33 @@ import { HlmSelectImports } from '@spartan-ng/helm/select';
 				<!-- Header -->
 				<div class="space-y-4">
 					<div class="relative flex items-center justify-center pt-1">
-						<div brnCalendarHeader class="text-sm font-medium flex items-center gap-1">
+						<div brnCalendarHeader class="flex items-center gap-1 text-sm font-medium">
 							<hlm-select [value]="months()[selectedMonth()].value" [placeholder]="months()[selectedMonth()].label">
-								<hlm-select-trigger class="h-7 px-2 mt-0">
+								<hlm-select-trigger class="mt-0 h-7 px-2">
 									<hlm-select-value></hlm-select-value>
 								</hlm-select-trigger>
 								<hlm-select-content>
 									@for (month of months(); track month.value) {
-										<hlm-option (click)="onMonthSelected(month.value)" [value]="month.value">{{month.label}}</hlm-option>
+										<hlm-option (click)="onMonthSelected(month.value)" [value]="month.value">
+											{{ month.label }}
+										</hlm-option>
 									}
 								</hlm-select-content>
 							</hlm-select>
 
-							<hlm-select [value]="years()[selectedYearIndex()].value" [placeholder]="years()[selectedYearIndex()].label">
-								<hlm-select-trigger class="h-7 px-2 mt-0">
-									<hlm-select-value ></hlm-select-value>
+							<hlm-select
+								[value]="years()[selectedYearIndex()].value"
+								[placeholder]="years()[selectedYearIndex()].label"
+							>
+								<hlm-select-trigger class="mt-0 h-7 px-2">
+									<hlm-select-value></hlm-select-value>
 								</hlm-select-trigger>
 								<hlm-select-content>
 									@for (year of years(); track year.value) {
-										<hlm-option (click)="onYearSelected(year.value)" [value]="year.value">{{year.label}}</hlm-option>
+										<hlm-option (click)="onYearSelected(year.value)" [value]="year.value">{{ year.label }}</hlm-option>
 									}
 								</hlm-select-content>
 							</hlm-select>
-
-
-
 						</div>
 
 						<div class="flex items-center space-x-1">
@@ -207,53 +209,45 @@ export class HlmCalendarComponent<T> {
 	);
 
 	protected readonly months = () => {
-		return Array.from({length: 12}, ((_, i: number) => ({
+		return Array.from({ length: 12 }, (_, i: number) => ({
 			value: i,
-			label: new Date(1900, i).toLocaleString(undefined, { month: 'short' })
-		})))
-	}
+			label: new Date(1900, i).toLocaleString(undefined, { month: 'short' }),
+		}));
+	};
 
 	protected readonly years = () => {
-		return Array.from({length: 200}, ((_, i: number) => ({
+		return Array.from({ length: 200 }, (_, i: number) => ({
 			value: this.startOfTime + i,
-			label: new Date(this.startOfTime + i, 0).toLocaleString(undefined, { year: 'numeric' })
-		})))
-	}
+			label: new Date(this.startOfTime + i, 0).toLocaleString(undefined, { year: 'numeric' }),
+		}));
+	};
 
-	protected readonly selectedMonth = computed(() =>
-		this.dateAdapter.getMonth(this._calendar().focusedDate())
-	);
+	protected readonly selectedMonth = computed(() => this.dateAdapter.getMonth(this._calendar().focusedDate()));
 
-	protected readonly selectedYear = computed(() =>
-		this.dateAdapter.getYear(this._calendar().focusedDate())
-	);
+	protected readonly selectedYear = computed(() => this.dateAdapter.getYear(this._calendar().focusedDate()));
 
 	protected readonly selectedYearIndex = computed(() => {
 		const currentYear = this.dateAdapter.getYear(this._calendar().focusedDate());
 		return currentYear - this.startOfTime;
 	});
 
-
 	protected onMonthSelected(month: number): void {
-		console.log({month})
+		console.log({ month });
 		const currentDate = this._calendar().focusedDate();
 		const year = this.dateAdapter.getYear(currentDate);
 		const day = this.dateAdapter.getDay(currentDate);
 
-
 		const newDate = this.dateAdapter.create({ year, month, day });
-		this._calendar().state().focusedDate.set(newDate)
+		this._calendar().state().focusedDate.set(newDate);
 	}
 
 	protected onYearSelected(year: number): void {
-		console.log({year})
+		console.log({ year });
 		const currentDate = this._calendar().focusedDate();
 		const month = this.dateAdapter.getMonth(currentDate);
 		const day = this.dateAdapter.getDay(currentDate);
 
-
 		const newDate = this.dateAdapter.create({ year, month, day });
-		this._calendar().state().focusedDate.set(newDate)
+		this._calendar().state().focusedDate.set(newDate);
 	}
-
 }
